@@ -103,6 +103,30 @@ class BinaryTreeMechanism:
         leaf_index = self.count + (2 ** (self.height - 1)) - 1
         self._accumulate_upwards(leaf_index, x)
 
+    def _prefix_cover_nodes(self):
+        """Return a minimal set of tree nodes covering prefix [1..count]."""
+        if self.count == 0:
+            return []
+
+        base = 2 ** (self.height - 1)
+        left = base
+        right = base + self.count - 1
+        nodes = []
+
+        # Invariant: [left, right] (inclusive) is exactly the uncovered remainder
+        # of the original prefix leaf interval, traversed left-to-right.
+        while left <= right:
+            if left % 2 == 1:
+                nodes.append(left)
+                left += 1
+            if right % 2 == 0:
+                nodes.append(right)
+                right -= 1
+            left //= 2
+            right //= 2
+
+        return nodes
+
     def query(self):
         """
         Return DP prefix sum up to current count.
@@ -118,18 +142,10 @@ class BinaryTreeMechanism:
             result = self._add_regularization(np.zeros((self.d, self.d)))
             return self._project_to_psd(result)
 
-        leaf_index = self.count + (2 ** (self.height - 1)) - 1
         result = np.zeros((self.d, self.d))
 
-        current = leaf_index
-        while current > 0:
-            if current % 2 == 0:  # current is right child
-                left_sibling = current - 1
-                result += self.tree[left_sibling] + self.noise[left_sibling]
-            current //= 2
-
-        # include the current leaf segment and its fixed noise
-        result += self.tree[leaf_index] + self.noise[leaf_index]
+        for node in self._prefix_cover_nodes():
+            result += self.tree[node] + self.noise[node]
 
         # add uniform regularization and project to PSD for numerical safety
         result = self._add_regularization(result)

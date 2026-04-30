@@ -1,13 +1,19 @@
-*.aux
-*.log
-*.out
-*.bbl
-*.blg
-*.synctex.gz
+*.pickle
+tests/
+test*
+validate*
+
+# Python
 __pycache__/
 *.pyc
-.env
+*.pyo
+*.pyd
+
+# macOS
 .DS_Store
-results/
-checkpoints/
-data/
+
+# IDE
+.vscode/
+
+# Experiment logs
+logs/

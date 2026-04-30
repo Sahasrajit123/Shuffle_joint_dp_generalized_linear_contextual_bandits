@@ -78,7 +78,7 @@ class OFULogPlus:
 
     def compute_optimistic_reward(self, arm):
         if self.ctr == 1:
-            res = np.random.normal(0, 1)
+            res = self.rng.normal(0, 1)
         else:
             obj = lambda theta: -np.sum(arm * theta)
             cstrf = lambda theta: self.logistic_loss(theta) - self.log_loss_hat

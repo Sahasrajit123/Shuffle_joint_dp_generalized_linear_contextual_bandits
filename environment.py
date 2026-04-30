@@ -144,8 +144,10 @@ class GLMBandit:
         self.t += 1
         return rewards, regrets, self.arms[self.t % self.T]
     
-    def reset(self):
+    def reset(self, reseed=False):
         self.t = 0
+        if reseed:
+            self.rng = np.random.default_rng(self.seed)
     
 
     def save_metadata(self, folder):
